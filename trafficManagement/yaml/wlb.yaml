@@ -1,0 +1,146 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: whoami
+  namespace: playground
+  labels:
+    app: whoami
+    service: whoami
+spec:
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000
+  selector:
+    app: whoami
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: playground
+  name: whoami
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: whoami
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: whoami
+        version: v1
+    spec:
+      containers:
+      - image: training/whoami
+        name: whoami 
+        ports:
+        - containerPort: 8000
+          protocol: TCP
+          name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: whoami-v2
+  namespace: playground
+  labels:
+    app: whoami
+spec:
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000
+  selector:
+    app: whoami
+    version: v2
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: playground
+  name: whoami-v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: whoami
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: whoami
+        version: v2
+    spec:
+      containers:
+      - image: training/whoami
+        name: whoami 
+        ports:
+        - containerPort: 8000
+          protocol: TCP
+          name: http
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: my-gateway
+  namespace: playground
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: my-gateway-vs
+  namespace: playground
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - my-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /whoami
+    rewrite:
+      uri: "/"
+    route:
+    - destination:
+        host: whoami
+        subset: v1
+        port:
+          number: 8000
+      weight: 90
+    - destination:
+        host: whoami
+        subset: v2
+        port:
+          number: 8000
+      weight: 10
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: product-service-dr
+  namespace: playground
+spec:
+  host: whoami
+  subsets:
+  - name: v1
+    labels:
+      version: v1
+  - name: v2
+    labels:
+      version: v2
