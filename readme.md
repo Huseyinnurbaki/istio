@@ -1,4 +1,4 @@
-# This repository includes simple examples for every concept of Isio Service Mesh. 
+# This repository includes simple examples for every concept of Istio Service Mesh. 
 
 ## [Observability](link)
 
