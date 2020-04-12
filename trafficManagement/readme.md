@@ -18,6 +18,8 @@ $ kubectl -f  gateway.yaml  apply
 ```console
 $ kubectl -f wlb.yaml  apply
 ```
+
+ for i in `seq 1 20`; do curl -f  -s  /dev/null http://localhost/whoami; done
 # Troubleshooting
 
 >Make sure you have enabled sidecar injection in your namespace

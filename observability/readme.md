@@ -28,7 +28,7 @@ $istioctl manifest apply --set values.kiali.enabled=true
 ## Apply Bookinfo Yaml
 
 ```sh
-$kubectl -f bookinfo.yaml apply
+$ kubectl -f bookinfo.yaml apply
 ```
 ## Apply Bookinfo Gateway Yaml
 

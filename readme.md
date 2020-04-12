@@ -1,22 +1,17 @@
 # This repository includes simple examples for every concept of Istio Service Mesh. 
 
-## [Observability](link)
+## [Observability](https://github.com/Huseyinnurbaki/istio/tree/master/observability)
 
-*  [Kiali Dashboard](link)
-*  [Troubleshooting](link)
+*  Kiali Dashboard
+*  Troubleshooting
 
-## [Traffic Management](link)
+## [Traffic Management](https://github.com/Huseyinnurbaki/istio/tree/master/trafficManagement)
 
-* [Gateway](link)
-* [Weighted Load Balancing](link)
-* [Troubleshooting](link)
+* Gateway
+* Weighted Load Balancing
+* Troubleshooting
 
-# [Policies](link)
-
-<!-- - [Kiali Dashboard](link)
-- [Troubleshooting](link) -->
-
-# [Security](link)
+# [Security](https://github.com/Huseyinnurbaki/istio/tree/master/security)
 
 
 ## My Environment
@@ -64,5 +59,25 @@ $ kubectl label namespace playground istio-injection=enabled
 https://istio.io/docs/tasks/traffic-management/ingress/ingress-control/#determining-the-ingress-ip-and-ports
 
 
-change ns 
+### Change namespace
+
+```sh
 $kubectl config set-context --current --namespace=myns
+```
+
+---
+
+
+### Send Multiple Requests
+
+```sh
+for i in `seq 1 30`; do curl -s -f /dev/null http://localhost/whoami; done
+```
+
+-----
+
+### Publish Port
+
+```sh
+$ kubectl port-forward whoami 7000:8000
+```

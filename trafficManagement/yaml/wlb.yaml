@@ -13,33 +13,23 @@ spec:
     targetPort: 8000
   selector:
     app: whoami
-
-
 ---
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: Pod
 metadata:
   namespace: playground
   name: whoami
+  labels:
+    app: whoami
+    version: v1
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: whoami
-      version: v1
-  template:
-    metadata:
-      labels:
-        app: whoami
-        version: v1
-    spec:
-      containers:
-      - image: training/whoami
-        name: whoami 
-        ports:
-        - containerPort: 8000
-          protocol: TCP
-          name: http
+  containers:
+  - name: whoami
+    image: training/whoami
+    ports:
+    - containerPort: 8000
+      protocol: TCP
+      name: http
 ---
 apiVersion: v1
 kind: Service
@@ -56,42 +46,32 @@ spec:
   selector:
     app: whoami
     version: v2
-
-
 ---
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: Pod
 metadata:
   namespace: playground
   name: whoami-v2
+  labels:
+    app: whoami
+    version: v2
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: whoami
-      version: v2
-  template:
-    metadata:
-      labels:
-        app: whoami
-        version: v2
-    spec:
-      containers:
-      - image: training/whoami
-        name: whoami 
-        ports:
-        - containerPort: 8000
-          protocol: TCP
-          name: http
+  containers:
+  - name: whoami
+    image: training/whoami
+    ports:
+    - containerPort: 8000
+      protocol: TCP
+      name: http
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: my-gateway
+  name: my-gateway-controller
   namespace: playground
 spec:
   selector:
-    istio: ingressgateway # use istio default controller
+    istio: ingressgateway
   servers:
   - port:
       number: 80
@@ -109,13 +89,11 @@ spec:
   hosts:
   - "*"
   gateways:
-  - my-gateway
+  - my-gateway-controller
   http:
   - match:
     - uri:
         prefix: /whoami
-    rewrite:
-      uri: "/"
     route:
     - destination:
         host: whoami
@@ -133,7 +111,7 @@ spec:
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
-  name: product-service-dr
+  name: whoami-destination-rule
   namespace: playground
 spec:
   host: whoami
