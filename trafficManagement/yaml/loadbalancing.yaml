@@ -1,15 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: whoami
+  name: whoami-svc
   namespace: playground
   labels:
-    app: whoami
-    service: whoami
+    service: whoami-svc
 spec:
   ports:
   - name: http
-    port: 7888
+    port: 8000
     targetPort: 8000
   selector:
     app: whoami
@@ -18,7 +17,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   namespace: playground
-  name: whoami
+  name: whoami-v1
   labels:
     app: whoami
     version: v1
@@ -32,22 +31,6 @@ spec:
       name: http
 ---
 apiVersion: v1
-kind: Service
-metadata:
-  name: whoami-v2
-  namespace: playground
-  labels:
-    app: whoami
-spec:
-  ports:
-  - name: http
-    port: 7886
-    targetPort: 8000
-  selector:
-    app: whoami
-    version: v2
----
-apiVersion: v1
 kind: Pod
 metadata:
   namespace: playground
@@ -55,6 +38,23 @@ metadata:
   labels:
     app: whoami
     version: v2
+spec:
+  containers:
+  - name: whoami
+    image: training/whoami
+    ports:
+    - containerPort: 8000
+      protocol: TCP
+      name: http
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: playground
+  name: whoami-v3
+  labels:
+    app: whoami
+    version: v3
 spec:
   containers:
   - name: whoami
@@ -96,7 +96,7 @@ spec:
         prefix: /whoami
     route:
     - destination:
-        host: whoami
+        host: whoami-svc
 
 ---
 apiVersion: networking.istio.io/v1alpha3
@@ -105,7 +105,7 @@ metadata:
   name: whoami-destination-rule
   namespace: playground
 spec:
-  host: whoami
+  host: whoami-svc
   trafficPolicy:
       loadBalancer:
         simple: ROUND_ROBIN
@@ -116,3 +116,6 @@ spec:
   - name: v2
     labels:
       version: v2
+  - name: v3
+    labels:
+      version: v3

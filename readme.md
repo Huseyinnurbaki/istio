@@ -71,7 +71,7 @@ $kubectl config set-context --current --namespace=myns
 ### Send Multiple Requests
 
 ```sh
-for i in `seq 1 30`; do curl -s -f /dev/null http://localhost/whoami; done
+for i in `seq 1 100`; do curl -s -f /dev/null http://localhost/productpage; done
 ```
 
 -----

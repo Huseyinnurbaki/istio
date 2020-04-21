@@ -32,22 +32,6 @@ spec:
       name: http
 ---
 apiVersion: v1
-kind: Service
-metadata:
-  name: whoami-v2
-  namespace: playground
-  labels:
-    app: whoami
-spec:
-  ports:
-  - name: http
-    port: 8000
-    targetPort: 8000
-  selector:
-    app: whoami
-    version: v2
----
-apiVersion: v1
 kind: Pod
 metadata:
   namespace: playground
@@ -100,13 +84,13 @@ spec:
         subset: v1
         port:
           number: 8000
-      weight: 90
+      weight: 50
     - destination:
         host: whoami
         subset: v2
         port:
           number: 8000
-      weight: 10
+      weight: 50
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
