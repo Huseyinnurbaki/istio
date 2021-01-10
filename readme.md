@@ -1,4 +1,4 @@
-# This repository includes simple examples for every concept of Istio Service Mesh. 
+# Istio Service Mesh 
 
 ## [Observability](https://github.com/Huseyinnurbaki/istio/tree/master/Observability)
 
@@ -7,14 +7,7 @@
 
 ## [Traffic Management](https://github.com/Huseyinnurbaki/istio/tree/master/TrafficManagement)
 
-
-
-
-# Installation
-
-```sh
-```
-# [Installation](https://istio.io/latest/docs/setup/getting-started)
+### [Installation](https://istio.io/latest/docs/setup/getting-started)
 
 
 
@@ -23,7 +16,7 @@ $ kubectl label namespace playground istio-injection=enabled
 ```
 
 
-# Deploy Apps
+## Deploy Apps
 
 ```bash
 $ kubectl apply -f ../yaml/common/bookinfo.yaml
@@ -39,7 +32,7 @@ $ kubectl exec "$(kubectl get pod -l app=ratings -o jsonpath='{.items[0].metadat
 
 
 
-# Determining the ingress IP and ports
+### Determining the ingress IP and ports
 
 > ingress[0].hostname for local development (default is .ingress[0].ip)
 
@@ -52,7 +45,7 @@ $ export TCP_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgat
 
 ```
 
-# Local development Tip - Do not forget to publish port , otherwise gateway will not be accessible
+### Local development Tip - Do not forget to publish port , otherwise gateway will not be accessible
 
 
 ```sh
@@ -66,24 +59,8 @@ $ kubectl port-forward svc/istio-ingressgateway 8080:80 -n istio-system
 https://istio.io/docs/tasks/traffic-management/ingress/ingress-control/#determining-the-ingress-ip-and-ports
 
 
-### Change namespace
-
-```sh
-$kubectl config set-context --current --namespace=myns
-```
-
----
-
-
 ### Send Multiple Requests
 
 ```sh
 for i in `seq 1 100`; do curl -s -f /dev/null http://localhost/productpage; done
 ```
-
------
-
-
-### Change Profile 
-
-$ istioctl manifest apply --set profile=demo
