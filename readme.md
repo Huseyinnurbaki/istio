@@ -1,58 +1,65 @@
 # This repository includes simple examples for every concept of Istio Service Mesh. 
 
-## [Observability](https://github.com/Huseyinnurbaki/istio/tree/master/observability)
+## [Observability](https://github.com/Huseyinnurbaki/istio/tree/master/Observability)
 
 *  Kiali Dashboard
 *  Troubleshooting
 
-## [Traffic Management](https://github.com/Huseyinnurbaki/istio/tree/master/trafficManagement)
-
-* Gateway
-* Weighted Load Balancing
-* Troubleshooting
-
-# [Security](https://github.com/Huseyinnurbaki/istio/tree/master/security)
+## [Traffic Management](https://github.com/Huseyinnurbaki/istio/tree/master/TrafficManagement)
 
 
-## My Environment
-
-- docker-for-desktop(mac): v2.2.0.5
-- kubernetes: v1.15.5
-- istioctl: v1.5.1 
 
 
 # Installation
 
 ```sh
-$ curl -L https://istio.io/downloadIstio | sh -
-$ cd istio-1.5.1
-$ export PATH=$PWD/bin:$PATH
 ```
+# [Installation](https://istio.io/latest/docs/setup/getting-started)
+
+
 
 ```console
-$ istioctl manifest apply --set profile=demo
-```
-
-
->If you haven't created any certificate for your kubernetes cluster, you will see the warning below. It will not prevent discovering features of Istio.
-
-```sh
-Detected that your cluster does not support third party JWT authentication. Falling back to less secure first party JWT. See https://istio.io/docs/ops/best-practices/security/#configure-third-party-service-account-tokens for details.
-```
-
-
--------
-```sh
-$ kubectl create ns playground
-```
-
-```sh
 $ kubectl label namespace playground istio-injection=enabled
 ```
 
 
+# Deploy Apps
 
--------
+```bash
+$ kubectl apply -f ../yaml/common/bookinfo.yaml
+$ kubectl apply -f ../yaml/common/bookinfo-gateway.yaml
+```
+
+### check if working
+
+```bash
+$ kubectl exec "$(kubectl get pod -l app=ratings -o jsonpath='{.items[0].metadata.name}')" -c ratings -- curl -s productpage:9080/productpage | grep -o "<title>.*</title>"
+```
+
+
+
+
+# Determining the ingress IP and ports
+
+> ingress[0].hostname for local development (default is .ingress[0].ip)
+
+```bash
+$ export INGRESS_HOST=$(kubectl -n istio-system get service istio-ingressgateway -o  jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+
+$ export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].port}')
+$ export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].port}')
+$ export TCP_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="tcp")].port}')
+
+```
+
+# Local development Tip - Do not forget to publish port , otherwise gateway will not be accessible
+
+
+```sh
+$ kubectl port-forward svc/istio-ingressgateway 8080:80 -n istio-system
+```
+
+
 
 ## Cheatsheet
 
@@ -76,8 +83,7 @@ for i in `seq 1 100`; do curl -s -f /dev/null http://localhost/productpage; done
 
 -----
 
-### Publish Port
 
-```sh
-$ kubectl port-forward whoami 7000:8000
-```
+### Change Profile 
+
+$ istioctl manifest apply --set profile=demo

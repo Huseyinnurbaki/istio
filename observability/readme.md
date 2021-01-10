@@ -21,45 +21,7 @@ $kubectl -f kialisecret.yaml apply
 
 ## Enable Kiali
 
-```sh
-$istioctl manifest apply --set values.kiali.enabled=true
 ```
-
-## Apply Bookinfo Yaml
-
-```sh
-$ kubectl -f bookinfo.yaml apply
-```
-## Apply Bookinfo Gateway Yaml
-
-```sh
-$kubectl -f bookinfo-gateway.yaml apply
-```
-
-## Start Kiali Dashboard
-
-```sh
-$istioctl dashboard kiali
-```
-
-
-# Troubleshooting
-
-```sh
-$istioctl manifest apply --set profile=demo
-```
-
-```sh
-$kubectl label namespace playground istio-injection=enabled
-```
-
-
-## cleanup
-
-
-```sh
-$kubectl -f bookinfo.yaml delete
-```
-```sh
-$kubectl -f bookinfo-gateway.yaml delete
+kubectl apply -f samples/addons
+kubectl rollout status deployment/kiali -n istio-system
 ```
